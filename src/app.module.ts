@@ -8,6 +8,7 @@ import { ConsoleModule } from 'nestjs-console';
 import { MailModule } from './mail/mail.module';
 import { envConfigFilePath } from './utils/env-config-file-path';
 import { CronModule } from './cron/cron.module';
+import { WorkingHoursModule } from './working-hours/working-hours.module';
 
 console.log({
   type: 'mysql',
@@ -71,6 +72,7 @@ console.log({
     ConsoleModule,
     MailModule,
     CronModule,
+    WorkingHoursModule,
   ],
   controllers: [AppController],
   providers: [AppService],

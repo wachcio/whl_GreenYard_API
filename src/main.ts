@@ -38,10 +38,10 @@ async function bootstrap() {
 
   app.setGlobalPrefix('api/v1');
   const options = new DocumentBuilder()
-    .setTitle('Mushroom atlas')
-    .setDescription('Mushroom atlas API')
+    .setTitle('whl GreenYard')
+    .setDescription('Working hours list GreenYard API')
     .setVersion('1.0')
-    .addTag('mushroom')
+    .addTag('GreenYard')
     .build();
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('api', app, document);

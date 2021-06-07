@@ -1,10 +1,30 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { CreateWorkingHourDto } from './dto/create-working-hour.dto';
 import { UpdateWorkingHourDto } from './dto/update-working-hour.dto';
+import { WorkingHour } from './entities/working-hour.entity';
 
 @Injectable()
 export class WorkingHoursService {
-  create(createWorkingHourDto: CreateWorkingHourDto) {
+  async create(createWorkingHourDto: CreateWorkingHourDto) {
+    const wHours = new WorkingHour();
+    try {
+      wHours.date = createWorkingHourDto.date;
+      wHours.startTimeOfWork = createWorkingHourDto.startTimeOfWork;
+      wHours.endTimeOfWork = createWorkingHourDto.endTimeOfWork;
+      wHours.workDescription = createWorkingHourDto.workDescription;
+      await wHours.save();
+      return wHours;
+    } catch (err) {
+      if (err.code === 'ER_DUP_ENTRY') {
+        throw new HttpException(
+          `Working hoours on '${wHours.date}' is already exist.`,
+          HttpStatus.BAD_REQUEST,
+        );
+      } else {
+        return err;
+      }
+    }
+
     return 'This action adds a new workingHour';
   }
 

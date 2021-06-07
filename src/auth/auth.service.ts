@@ -38,8 +38,7 @@ export class AuthService {
   userPermissions(role): any {
     if (role == userRoleEnum.admin) {
       return {
-        mushrooms: { get: true, add: true, delete: true, update: true },
-        images: { get: true, add: true, delete: true },
+        hours: { get: true, add: true, delete: true, update: true },
         users: {
           get: true,
           add: true,
@@ -49,8 +48,7 @@ export class AuthService {
     }
     if (role == userRoleEnum.moderator) {
       return {
-        mushrooms: { get: true, add: true, delete: false, update: true },
-        images: { get: true, add: true, delete: false },
+        hours: { get: true, add: true, delete: true, update: true },
         users: {
           get: false,
           add: false,
@@ -60,8 +58,7 @@ export class AuthService {
     }
     if (role == userRoleEnum.user) {
       return {
-        mushrooms: { get: true, add: false, delete: false, update: false },
-        images: { get: true, add: false, delete: false },
+        hours: { get: true, add: true, delete: true, update: true },
         users: {
           get: false,
           add: false,

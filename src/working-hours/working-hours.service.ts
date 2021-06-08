@@ -12,6 +12,16 @@ export class WorkingHoursService {
     return { username, email, role };
   }
 
+  shortUserInfo(user: User) {
+    delete user.id;
+    delete user.pwdHash;
+    delete user.currentTokenId;
+    delete user.resetPasswordToken;
+    delete user.resetPasswordExpirationDate;
+
+    return user;
+  }
+
   async create(
     createWorkingHourDto: CreateWorkingHourDto,
     user: User,
@@ -61,13 +71,44 @@ export class WorkingHoursService {
   }
 
   async findAll(user: User): Promise<WorkingHoursResponse[]> {
-    return await WorkingHour.find({
-      where: { owner: user.id },
-    });
+    try {
+      const res = await WorkingHour.find({
+        where: { owner: user.id },
+      });
+      res.map((e) => {
+        e.owner = this.shortUserInfo(user);
+      });
+
+      return res;
+    } catch (err) {
+      return err;
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} workingHour`;
+  async findOne(id: string, user: User): Promise<WorkingHoursResponse> {
+    try {
+      if (!id) {
+        throw new HttpException(
+          `Record ${id} is not exist.`,
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      const res = await WorkingHour.findOne({
+        where: { owner: user.id, id: id },
+        relations: ['owner'],
+      });
+
+      if (!res) {
+        throw new HttpException(
+          `Record ${id} is not find.`,
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      res.owner = this.shortUserInfo(res.owner);
+      return res;
+    } catch (err) {
+      return err;
+    }
   }
 
   update(id: number, updateWorkingHourDto: UpdateWorkingHourDto) {

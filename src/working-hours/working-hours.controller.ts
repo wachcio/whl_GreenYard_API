@@ -35,12 +35,14 @@ export class WorkingHoursController {
     return this.workingHoursService.findAll(user);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.workingHoursService.findOne(+id);
+  @Get('/:id')
+  @UseGuards(AuthGuard('jwt'))
+  findOne(@Param('id') id: string, @UserObj() user: User) {
+    return this.workingHoursService.findOne(id, user);
   }
 
   @Patch(':id')
+  @UseGuards(AuthGuard('jwt'))
   update(
     @Param('id') id: string,
     @Body() updateWorkingHourDto: UpdateWorkingHourDto,
@@ -49,6 +51,7 @@ export class WorkingHoursController {
   }
 
   @Delete(':id')
+  @UseGuards(AuthGuard('jwt'))
   remove(@Param('id') id: string) {
     return this.workingHoursService.remove(+id);
   }

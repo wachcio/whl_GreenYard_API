@@ -111,8 +111,64 @@ export class WorkingHoursService {
     }
   }
 
-  update(id: number, updateWorkingHourDto: UpdateWorkingHourDto) {
-    return `This action updates a #${id} workingHour`;
+  async update(
+    id: string,
+    wHour: UpdateWorkingHourDto,
+    user: User,
+  ): Promise<WorkingHoursResponse> {
+    if (Object.keys(wHour).length === 0) {
+      throw new HttpException(
+        `You must provide correct data.`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    if (!id) {
+      throw new HttpException(
+        `Record ${id} is not exist.`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    try {
+      const res = await WorkingHour.findOne({
+        where: { owner: user.id, id: id },
+        relations: ['owner'],
+      });
+
+      if (!res) {
+        throw new HttpException(
+          `Record ${id} is not find.`,
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      res.id = id;
+      res.dateOfWork = wHour.dateOfWork;
+      res.startTimeOfWork = wHour.startTimeOfWork;
+      res.endTimeOfWork = wHour.endTimeOfWork;
+      res.workDescription = wHour.workDescription;
+      res.createAt = wHour.createAt;
+      res.updateAt = wHour.updateAt;
+
+      // res.owner = wHour.owner;
+
+      await res.save();
+      delete res.owner.id;
+      delete res.owner.pwdHash;
+      delete res.owner.currentTokenId;
+      delete res.owner.resetPasswordToken;
+      delete res.owner.resetPasswordExpirationDate;
+      return res;
+    } catch (err) {
+      // if (err.code === 'ER_DUP_ENTRY') {
+      //   throw new HttpException(
+      //     `Polish or scientific name is already exist.`,
+      //     HttpStatus.BAD_REQUEST,
+      //   );
+      return err;
+    }
+
+    // return `This action updates a #${id} workingHour`;
   }
 
   async remove(id: string, user: User) {

@@ -46,8 +46,9 @@ export class WorkingHoursController {
   update(
     @Param('id') id: string,
     @Body() updateWorkingHourDto: UpdateWorkingHourDto,
+    @UserObj() user: User,
   ) {
-    return this.workingHoursService.update(+id, updateWorkingHourDto);
+    return this.workingHoursService.update(id, updateWorkingHourDto, user);
   }
 
   @Delete('/:id')

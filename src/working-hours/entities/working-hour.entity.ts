@@ -25,7 +25,7 @@ export class WorkingHour extends BaseEntity {
     default: null,
     // unique: true,
   })
-  date: Date | string;
+  dateOfWork: Date | string;
 
   @Column({
     type: 'time',

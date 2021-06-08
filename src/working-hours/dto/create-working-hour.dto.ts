@@ -10,7 +10,7 @@ import { messageMax, messageMin } from '../../utils/validation-message';
 export class CreateWorkingHourDto {
   @IsNotEmpty()
   @IsISO8601()
-  date: Date;
+  dateOfWork: Date;
   @IsNotEmpty()
   @IsMilitaryTime()
   startTimeOfWork: Date;

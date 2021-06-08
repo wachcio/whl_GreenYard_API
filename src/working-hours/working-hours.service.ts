@@ -9,8 +9,19 @@ export class WorkingHoursService {
   async create(createWorkingHourDto: CreateWorkingHourDto, user: User) {
     const wHours = new WorkingHour();
     try {
+      const dateAndOwnerInDB = await WorkingHour.findOne({
+        where: { owner: user, dateOfWork: createWorkingHourDto.dateOfWork },
+      });
+
+      if (dateAndOwnerInDB) {
+        throw new HttpException(
+          `Working hours on '${wHours.dateOfWork}' is already exist.`,
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
       wHours.owner = user;
-      wHours.date = createWorkingHourDto.date;
+      wHours.dateOfWork = createWorkingHourDto.dateOfWork;
       wHours.startTimeOfWork = createWorkingHourDto.startTimeOfWork;
       wHours.endTimeOfWork = createWorkingHourDto.endTimeOfWork;
       wHours.workDescription = createWorkingHourDto.workDescription;
@@ -20,7 +31,7 @@ export class WorkingHoursService {
     } catch (err) {
       if (err.code === 'ER_DUP_ENTRY') {
         throw new HttpException(
-          `Working hours on '${wHours.date}' is already exist.`,
+          `Working hours on '${wHours.dateOfWork}' is already exist.`,
           HttpStatus.BAD_REQUEST,
         );
       } else {

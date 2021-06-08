@@ -46,16 +46,7 @@ export class AuthService {
         },
       };
     }
-    if (role == userRoleEnum.moderator) {
-      return {
-        hours: { get: true, add: true, delete: true, update: true },
-        users: {
-          get: false,
-          add: false,
-          delete: false,
-        },
-      };
-    }
+
     if (role == userRoleEnum.user) {
       return {
         hours: { get: true, add: true, delete: true, update: true },

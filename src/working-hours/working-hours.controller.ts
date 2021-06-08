@@ -9,7 +9,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { UserRoleModeratorsGuard } from '../guards/user-role-moderators.guard';
+// import { UserRoleModeratorsGuard } from '../guards/user-role-moderators.guard';
 import { WorkingHoursService } from './working-hours.service';
 import { CreateWorkingHourDto } from './dto/create-working-hour.dto';
 import { UpdateWorkingHourDto } from './dto/update-working-hour.dto';
@@ -21,7 +21,7 @@ export class WorkingHoursController {
   constructor(private readonly workingHoursService: WorkingHoursService) {}
 
   @Post()
-  @UseGuards(AuthGuard('jwt'), UserRoleModeratorsGuard)
+  @UseGuards(AuthGuard('jwt'))
   create(
     @Body() createWorkingHourDto: CreateWorkingHourDto,
     @UserObj() user: User,
@@ -30,8 +30,9 @@ export class WorkingHoursController {
   }
 
   @Get()
-  findAll() {
-    return this.workingHoursService.findAll();
+  @UseGuards(AuthGuard('jwt'))
+  findAll(@UserObj() user: User) {
+    return this.workingHoursService.findAll(user);
   }
 
   @Get(':id')

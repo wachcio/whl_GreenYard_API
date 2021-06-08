@@ -11,7 +11,7 @@ import { messageMax, messageMin } from '../../utils/validation-message';
 
 export enum userRoleEnum {
   'user' = 'user',
-  'moderator' = 'moderator',
+  // 'moderator' = 'moderator',
   'admin' = 'admin',
 }
 function convertUserRoleEnumToString() {

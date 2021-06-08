@@ -60,8 +60,10 @@ export class WorkingHoursService {
     };
   }
 
-  async findAll() {
-    return `This action returns all workingHours.`;
+  async findAll(user: User): Promise<WorkingHoursResponse[]> {
+    return await WorkingHour.find({
+      where: { owner: user.id },
+    });
   }
 
   findOne(id: number) {

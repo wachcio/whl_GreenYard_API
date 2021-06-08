@@ -5,6 +5,7 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
+  Timestamp,
 } from 'typeorm';
 
 import { User } from '../../user/user.entity';
@@ -45,4 +46,17 @@ export class WorkingHour extends BaseEntity {
     default: null,
   })
   workDescription: string;
+
+  @Column('timestamp', {
+    precision: 0,
+    default: () => 'CURRENT_TIMESTAMP(3)',
+  })
+  createAt: Date;
+
+  @Column('timestamp', {
+    precision: 0,
+    default: () => 'CURRENT_TIMESTAMP(3)',
+    onUpdate: 'CURRENT_TIMESTAMP(3)',
+  })
+  updateAt: Date;
 }

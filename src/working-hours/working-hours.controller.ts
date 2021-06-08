@@ -41,7 +41,7 @@ export class WorkingHoursController {
     return this.workingHoursService.findOne(id, user);
   }
 
-  @Patch(':id')
+  @Patch('/:id')
   @UseGuards(AuthGuard('jwt'))
   update(
     @Param('id') id: string,
@@ -50,9 +50,9 @@ export class WorkingHoursController {
     return this.workingHoursService.update(+id, updateWorkingHourDto);
   }
 
-  @Delete(':id')
+  @Delete('/:id')
   @UseGuards(AuthGuard('jwt'))
-  remove(@Param('id') id: string) {
-    return this.workingHoursService.remove(+id);
+  remove(@Param('id') id: string, @UserObj() user: User) {
+    return this.workingHoursService.remove(id, user);
   }
 }

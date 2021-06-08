@@ -115,7 +115,28 @@ export class WorkingHoursService {
     return `This action updates a #${id} workingHour`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} workingHour`;
+  async remove(id: string, user: User) {
+    try {
+      if (!id) {
+        throw new HttpException(
+          `Record ${id} is not exist.`,
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      const res = await WorkingHour.findOne({
+        where: { owner: user.id, id: id },
+        relations: ['owner'],
+      });
+
+      if (!res) {
+        throw new HttpException(
+          `Record ${id} is not find.`,
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      await WorkingHour.delete(id);
+    } catch (err) {
+      return err;
+    }
   }
 }

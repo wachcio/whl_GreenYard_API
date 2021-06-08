@@ -3,7 +3,7 @@ import {
   Column,
   Entity,
   JoinColumn,
-  OneToOne,
+  ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -14,14 +14,16 @@ export class WorkingHour extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @OneToOne(() => User)
+  @ManyToOne(() => User, {
+    cascade: true,
+  })
   @JoinColumn()
-  user: User;
+  owner: User;
 
   @Column({
     type: 'date',
     default: null,
-    unique: true,
+    // unique: true,
   })
   date: Date | string;
 

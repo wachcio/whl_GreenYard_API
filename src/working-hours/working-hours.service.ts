@@ -1,4 +1,5 @@
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { WorkingHoursResponse } from 'src/interfaces/hourse';
 import { User } from 'src/user/user.entity';
 import { CreateWorkingHourDto } from './dto/create-working-hour.dto';
 import { UpdateWorkingHourDto } from './dto/update-working-hour.dto';
@@ -6,7 +7,15 @@ import { WorkingHour } from './entities/working-hour.entity';
 
 @Injectable()
 export class WorkingHoursService {
-  async create(createWorkingHourDto: CreateWorkingHourDto, user: User) {
+  filter(user: User) {
+    const { username, email, role } = user;
+    return { username, email, role };
+  }
+
+  async create(
+    createWorkingHourDto: CreateWorkingHourDto,
+    user: User,
+  ): Promise<WorkingHoursResponse> {
     const wHours = new WorkingHour();
     try {
       const dateAndOwnerInDB = await WorkingHour.findOne({
@@ -26,8 +35,6 @@ export class WorkingHoursService {
       wHours.endTimeOfWork = createWorkingHourDto.endTimeOfWork;
       wHours.workDescription = createWorkingHourDto.workDescription;
       await wHours.save();
-
-      return wHours;
     } catch (err) {
       if (err.code === 'ER_DUP_ENTRY') {
         throw new HttpException(
@@ -38,8 +45,19 @@ export class WorkingHoursService {
         return err;
       }
     }
-
-    return 'This action adds a new workingHour';
+    return {
+      owner: {
+        username: wHours.owner.username,
+        email: wHours.owner.email,
+        role: wHours.owner.role,
+      },
+      dateOfWork: wHours.dateOfWork,
+      startTimeOfWork: wHours.startTimeOfWork,
+      endTimeOfWork: wHours.endTimeOfWork,
+      workDescription: wHours.workDescription,
+      createAt: wHours.createAt,
+      updateAt: wHours.updateAt,
+    };
   }
 
   async findAll() {

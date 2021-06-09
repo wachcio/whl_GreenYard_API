@@ -11,6 +11,14 @@ export class User extends BaseEntity {
     unique: true,
   })
   username: string;
+  @Column({
+    length: 255,
+  })
+  firstName: string;
+  @Column({
+    length: 255,
+  })
+  lastName: string;
 
   @Column({
     length: 255,

@@ -8,7 +8,7 @@
   "scripts": {
     "prebuild": "rimraf dist && mkdir ./dist && mkdir ./dist/templates && cp -r ./src/templates ./dist",
     "build": "nest build",
-    "postbuild": "cp package.json ./dist && cp .env.production ./dist && mv ./dist/main.js ./dist/app.js",
+    "postbuild": "cp package.json ./dist && cp .env.production ./dist && mv ./dist/main.js ./dist/app.js && mkdir ./dist/tmp",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start ",
     "prestart:dev": "rimraf dist ",
@@ -27,7 +27,8 @@
     "console:dev": "npm run build:console:dev && npm run console",
     "console_dev_build": "npm run build:console:dev &&cross-env NODE_ENV=development  node dist/console.js",
     "console_dev": "cross-env NODE_ENV=development  node dist/console.js",
-    "console": "node console.js"
+    "console": "node console.js",
+    "reset:app": "touch tmp/restart.txt"
   },
   "dependencies": {
     "@nest-modules/mailer": "^1.3.22",

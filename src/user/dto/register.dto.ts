@@ -32,6 +32,24 @@ export class RegisterDto {
     message: messageMax('$property', '$constraint1'),
   })
   username: string;
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(4, {
+    message: messageMin('$property', '$constraint1'),
+  })
+  @MaxLength(255, {
+    message: messageMax('$property', '$constraint1'),
+  })
+  firstName: string;
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(4, {
+    message: messageMin('$property', '$constraint1'),
+  })
+  @MaxLength(255, {
+    message: messageMax('$property', '$constraint1'),
+  })
+  lastName: string;
   @IsNotEmpty()
   @IsEmail(
     {},

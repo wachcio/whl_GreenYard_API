@@ -11,6 +11,7 @@ import {
   generatorPassword,
   generatorTokenLink,
 } from 'src/utils/random-string-generator';
+import { json } from 'express';
 
 @Injectable()
 @Console({
@@ -31,10 +32,24 @@ export class UserService {
     if (!newUser.email || !validateEmail(newUser.email)) {
       throw new HttpException(`Email is not valid`, HttpStatus.BAD_REQUEST);
     }
+    if (
+      !newUser.email ||
+      !newUser.username ||
+      !newUser.firstName ||
+      !newUser.lastName ||
+      !newUser.pwd
+    ) {
+      throw new HttpException(
+        `Provide not correct data`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
 
     try {
       const user = new User();
       user.username = newUser.username;
+      user.firstName = newUser.firstName;
+      user.lastName = newUser.lastName;
       user.email = newUser.email;
       user.pwdHash = hashPwd(newUser.pwd);
 
@@ -204,6 +219,8 @@ export class UserService {
   })
   async addUsersCmd(
     username: string,
+    firstName: string,
+    lastName: string,
     email: string,
     pwd: string,
     role: userRoleEnum,
@@ -212,6 +229,8 @@ export class UserService {
       await this.register(
         {
           username,
+          firstName,
+          lastName,
           email,
           pwd,
           role,
@@ -236,11 +255,23 @@ export class UserService {
   async updateUserCmd(
     id: string,
     username: string,
+
+    firstName: string,
+    lastName: string,
     email: string,
     pwd: string,
     role: userRoleEnum,
   ) {
-    console.log(await this.updateUser(id, { username, email, pwd, role }));
+    console.log(
+      await this.updateUser(id, {
+        username,
+        firstName,
+        lastName,
+        email,
+        pwd,
+        role,
+      }),
+    );
   }
 
   @Command({

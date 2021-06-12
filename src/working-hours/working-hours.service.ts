@@ -4,6 +4,15 @@ import { User } from 'src/user/user.entity';
 import { CreateWorkingHourDto } from './dto/create-working-hour.dto';
 import { UpdateWorkingHourDto } from './dto/update-working-hour.dto';
 import { WorkingHour } from './entities/working-hour.entity';
+import {
+  getInfoOfWeek,
+  getHoursInWork,
+  getHoursWorkedWithoutBreaks,
+  getHoursToPay,
+  getHoursToPayInWeek,
+  getDaysFromWeekNumber,
+} from '../utils/convertingHours';
+import { GetInfoOfWeek } from 'src/interfaces/convertingHours';
 
 @Injectable()
 export class WorkingHoursService {
@@ -83,6 +92,12 @@ export class WorkingHoursService {
     } catch (err) {
       return err;
     }
+  }
+  async week(
+    weekNumber: number,
+    user: User,
+  ): Promise<(string | { [x: string]: string })[]> {
+    return getDaysFromWeekNumber(+weekNumber);
   }
 
   async findOne(id: string, user: User): Promise<WorkingHoursResponse> {

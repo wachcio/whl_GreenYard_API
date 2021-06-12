@@ -46,6 +46,7 @@
     "class-validator": "^0.12.2",
     "commander": "^6.2.1",
     "cookie-parser": "^1.4.5",
+    "dayjs": "^1.10.5",
     "fastify-swagger": "^3.5.0",
     "handlebars": "^4.7.6",
     "multer": "^1.4.2",

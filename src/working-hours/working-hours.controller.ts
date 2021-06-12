@@ -38,11 +38,11 @@ export class WorkingHoursController {
   @Get('/week/:weekNumber/:year?')
   @UseGuards(AuthGuard('jwt'))
   week(
+    @UserObj() user: User,
     @Param('weekNumber') weekNumber: number,
     @Param('year') year?: number,
-    // @UserObj() user: User,
   ) {
-    return this.workingHoursService.week(+weekNumber, +year);
+    return this.workingHoursService.week(user, +weekNumber, +year);
     // return this.workingHoursService.week(+weekNumber, +year, user);
   }
 

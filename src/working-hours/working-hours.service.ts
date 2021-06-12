@@ -13,6 +13,7 @@ import {
   getDaysFromWeekNumber,
 } from '../utils/convertingHours';
 import { GetInfoOfWeek } from 'src/interfaces/convertingHours';
+import { In } from 'typeorm';
 
 @Injectable()
 export class WorkingHoursService {
@@ -94,11 +95,39 @@ export class WorkingHoursService {
     }
   }
   async week(
+    user: User,
     weekNumber: number,
     year: number,
-    // user: User,
-  ): Promise<(string | { [x: string]: string })[]> {
-    return getDaysFromWeekNumber(+weekNumber, +year);
+  ): Promise<WorkingHour[]> {
+    const daysInWeek: (string | { [x: string]: string })[] =
+      getDaysFromWeekNumber(+weekNumber, +year);
+
+    try {
+      const wHours = await WorkingHour.find({
+        where: { owner: user.id, dateOfWork: In(daysInWeek) },
+        order: { dateOfWork: 'ASC' },
+      });
+
+      const res = [];
+
+      wHours.map((e) => {
+        const e2 = {
+          toPay: getHoursToPay(
+            e.startTimeOfWork.toLocaleString(),
+            e.endTimeOfWork.toLocaleString(),
+            e.dateOfWork,
+          ),
+        };
+        delete e.id;
+        res.push(Object.assign(e, e2));
+      });
+
+      return res;
+    } catch (err) {
+      return err;
+    }
+
+    // return getDaysFromWeekNumber(+weekNumber, +year);
   }
 
   async findOne(id: string, user: User): Promise<WorkingHoursResponse> {

@@ -95,9 +95,10 @@ export class WorkingHoursService {
   }
   async week(
     weekNumber: number,
-    user: User,
+    year: number,
+    // user: User,
   ): Promise<(string | { [x: string]: string })[]> {
-    return getDaysFromWeekNumber(+weekNumber);
+    return getDaysFromWeekNumber(+weekNumber, +year);
   }
 
   async findOne(id: string, user: User): Promise<WorkingHoursResponse> {

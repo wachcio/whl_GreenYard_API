@@ -35,10 +35,15 @@ export class WorkingHoursController {
     return this.workingHoursService.findAll(user);
   }
 
-  @Get('/week/:weekNumber/')
+  @Get('/week/:weekNumber/:year?')
   @UseGuards(AuthGuard('jwt'))
-  week(@Param('weekNumber') weekNumber: number, @UserObj() user: User) {
-    return this.workingHoursService.week(+weekNumber, user);
+  week(
+    @Param('weekNumber') weekNumber: number,
+    @Param('year') year?: number,
+    // @UserObj() user: User,
+  ) {
+    return this.workingHoursService.week(+weekNumber, +year);
+    // return this.workingHoursService.week(+weekNumber, +year, user);
   }
 
   @Get('/:id')

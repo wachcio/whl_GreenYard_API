@@ -18,6 +18,10 @@ import * as duration from 'dayjs/plugin/duration';
 import * as objectSupport from 'dayjs/plugin/objectSupport';
 import * as relativeTime from 'dayjs/plugin/relativeTime';
 import * as weekday from 'dayjs/plugin/weekday';
+import * as isoWeeksInYear from 'dayjs/plugin/isoWeeksInYear';
+import * as isLeapYear from 'dayjs/plugin/isLeapYear';
+
+import { HttpException, HttpStatus } from '@nestjs/common';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -29,6 +33,8 @@ dayjs.extend(duration);
 dayjs.extend(objectSupport);
 dayjs.extend(relativeTime);
 dayjs.extend(weekday);
+dayjs.extend(isoWeeksInYear);
+dayjs.extend(isLeapYear);
 
 dayjs.tz.setDefault('Europe/Warsaw');
 dayjs.locale('pl');
@@ -348,19 +354,32 @@ export const getHoursToPayInWeek = (hoursInWeek: HoursInWeekDay[]) => {
 
 export const getDaysFromWeekNumber = (
   weekNumber: number,
+  year?: number,
   withNames?: boolean,
 ): (string | { [x: string]: string })[] => {
   const arr = [];
+  if (!year) year = dayjs().year();
 
-  for (let i = 1; i <= 7; i++) {
+  if (dayjs(`${year}-01-01`).isoWeeksInYear() < weekNumber)
+    throw new HttpException(`Invalid week number.`, HttpStatus.BAD_REQUEST);
+
+  const monday = dayjs().isoWeek(weekNumber).startOf('w').year(year);
+
+  for (let i = 0; i <= 6; i++) {
     if (!withNames) {
-      arr.push(dayjs().isoWeek(weekNumber).day(i).format('YYYY-MM-DD'));
+      arr.push(monday.add(i, 'day').format('YYYY-MM-DD'));
     } else {
-      const dayName = dayjs().isoWeek(weekNumber).day(i).format('dddd');
-      const date = dayjs().isoWeek(weekNumber).day(i).format('YYYY-MM-DD');
+      const dayName = monday.add(i, 'day').format('dddd');
+      const date = monday.add(i, 'day').format('YYYY-MM-DD');
       arr.push({ [dayName]: date });
     }
   }
+
+  if (arr.includes('Invalid Date'))
+    throw new HttpException(
+      `Invalid week number or year.`,
+      HttpStatus.BAD_REQUEST,
+    );
 
   return arr;
 };

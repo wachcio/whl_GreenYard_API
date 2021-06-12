@@ -11,6 +11,7 @@ import {
   getHoursToPay,
   getHoursToPayInWeek,
   getDaysFromWeekNumber,
+  getDaysFromMonthNumber,
 } from '../utils/convertingHours';
 import { GetInfoOfWeek } from 'src/interfaces/convertingHours';
 import { In } from 'typeorm';
@@ -105,9 +106,9 @@ export class WorkingHoursService {
     try {
       const wHours = await WorkingHour.find({
         where: { owner: user.id, dateOfWork: In(daysInWeek) },
+        relations: ['owner'],
         order: { dateOfWork: 'ASC' },
       });
-
       const res = [];
 
       wHours.map((e) => {
@@ -119,6 +120,45 @@ export class WorkingHoursService {
           ),
         };
         delete e.id;
+        e.owner = this.shortUserInfo(e.owner);
+        res.push(Object.assign(e, e2));
+      });
+
+      return res;
+    } catch (err) {
+      return err;
+    }
+
+    // return getDaysFromWeekNumber(+weekNumber, +year);
+  }
+  async month(
+    user: User,
+    monthNumber: number,
+    year: number,
+  ): Promise<WorkingHour[]> {
+    const daysInWeek: { [x: string]: string }[] = getDaysFromMonthNumber(
+      +monthNumber,
+      +year,
+    );
+
+    try {
+      const wHours = await WorkingHour.find({
+        where: { owner: user.id, dateOfWork: In(daysInWeek) },
+        relations: ['owner'],
+        order: { dateOfWork: 'ASC' },
+      });
+      const res = [];
+
+      wHours.map((e) => {
+        const e2 = {
+          toPay: getHoursToPay(
+            e.startTimeOfWork.toLocaleString(),
+            e.endTimeOfWork.toLocaleString(),
+            e.dateOfWork,
+          ),
+        };
+        delete e.id;
+        e.owner = this.shortUserInfo(e.owner);
         res.push(Object.assign(e, e2));
       });
 

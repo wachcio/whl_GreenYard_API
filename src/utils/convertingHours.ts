@@ -360,7 +360,7 @@ export const getDaysFromWeekNumber = (
   const arr = [];
   if (!year) year = dayjs().year();
 
-  if (dayjs(`${year}-01-01`).isoWeeksInYear() < weekNumber)
+  if (dayjs(`${year}-01-01`).isoWeeksInYear() < weekNumber || weekNumber < 1)
     throw new HttpException(`Invalid week number.`, HttpStatus.BAD_REQUEST);
 
   const monday = dayjs().isoWeek(weekNumber).startOf('w').year(year);
@@ -378,6 +378,36 @@ export const getDaysFromWeekNumber = (
   if (arr.includes('Invalid Date'))
     throw new HttpException(
       `Invalid week number or year.`,
+      HttpStatus.BAD_REQUEST,
+    );
+
+  return arr;
+};
+export const getDaysFromMonthNumber = (
+  monthNumber: number,
+  year?: number,
+): { [x: string]: string }[] => {
+  const arr = [];
+  if (!year) year = dayjs().year();
+
+  if (monthNumber < 1 || monthNumber > 12)
+    throw new HttpException(`Invalid month number.`, HttpStatus.BAD_REQUEST);
+  monthNumber--;
+
+  const firstOfMonth = dayjs().year(year).month(monthNumber).hour(2).date(1);
+  const lasttOfMonth = +dayjs()
+    .year(year)
+    .month(monthNumber)
+    .endOf('M')
+    .format('DD');
+
+  for (let i = 1; i <= lasttOfMonth; i++) {
+    arr.push(firstOfMonth.add(i, 'day').format('YYYY-MM-DD'));
+  }
+
+  if (arr.includes('Invalid Date'))
+    throw new HttpException(
+      `Invalid month number or year.`,
       HttpStatus.BAD_REQUEST,
     );
 

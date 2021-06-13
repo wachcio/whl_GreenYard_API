@@ -85,16 +85,31 @@ export class WorkingHoursService {
     };
   }
 
-  async findAll(user: User): Promise<WorkingHoursResponse[]> {
+  async findAll(user: User): Promise<{ hours: WorkingHour[]; owner: User }> {
     try {
-      const res = await WorkingHour.find({
+      const wHours = await WorkingHour.find({
         where: { owner: user.id },
+        relations: ['owner'],
+        order: { dateOfWork: 'ASC' },
       });
-      res.map((e) => {
-        e.owner = this.shortUserInfo(user);
+      const ownerRes = { owner: this.shortUserInfo(wHours[0].owner) };
+
+      const res: WorkingHour[] = [];
+
+      wHours.map((e) => {
+        const e2 = {
+          toPay: getHoursToPay(
+            e.startTimeOfWork.toLocaleString(),
+            e.endTimeOfWork.toLocaleString(),
+            e.dateOfWork,
+          ),
+        };
+        delete e.owner;
+        res.push(Object.assign(e, e2));
       });
 
-      return res;
+      const hours = { hours: [...res] };
+      return { ...hours, ...ownerRes };
     } catch (err) {
       return err;
     }
@@ -124,7 +139,6 @@ export class WorkingHoursService {
             e.dateOfWork,
           ),
         };
-        delete e.id;
         delete e.owner;
         res.push(Object.assign(e, e2));
       });
@@ -161,7 +175,6 @@ export class WorkingHoursService {
             e.dateOfWork,
           ),
         };
-        delete e.id;
         delete e.owner;
         res.push(Object.assign(e, e2));
       });
@@ -191,7 +204,6 @@ export class WorkingHoursService {
         res.endTimeOfWork.toLocaleString(),
         res.dateOfWork,
       );
-      delete res.id;
       delete res.owner;
 
       const hours = { hours: Object.assign({}, res, { toPay }) };

@@ -12,6 +12,7 @@ import {
   getHoursToPayInWeek,
   getDaysFromWeekNumber,
   getDaysFromMonthNumber,
+  isValidDate,
 } from '../utils/convertingHours';
 import { GetInfoOfWeek } from 'src/interfaces/convertingHours';
 import { In } from 'typeorm';
@@ -166,8 +167,25 @@ export class WorkingHoursService {
     } catch (err) {
       return err;
     }
+  }
+  async day(user: User, date: string): Promise<WorkingHour> {
+    if (!isValidDate(date))
+      throw new HttpException(
+        `${date} is not valid date.`,
+        HttpStatus.BAD_REQUEST,
+      );
+    try {
+      const res = await WorkingHour.findOne({
+        where: { owner: user.id, dateOfWork: date },
+        relations: ['owner'],
+      });
+      delete res.id;
+      res.owner = this.shortUserInfo(res.owner);
 
-    // return getDaysFromWeekNumber(+weekNumber, +year);
+      return res;
+    } catch (err) {
+      return err;
+    }
   }
 
   async findOne(id: string, user: User): Promise<WorkingHoursResponse> {

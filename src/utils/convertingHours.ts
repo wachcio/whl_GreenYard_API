@@ -45,6 +45,10 @@ const timeStringToFloat = (time: string): number => {
   const minutes: number = hoursMinutes[1] ? parseFloat(hoursMinutes[1]) : 0;
   return hours + minutes / 60;
 };
+
+export const isValidDate = (date: string): boolean => {
+  return dayjs(date).isValid();
+};
 //Returns an object that contains the provided date (string or Date object)
 export const getInfoOfWeek = (
   date: string | Date = new Date(),

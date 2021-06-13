@@ -55,6 +55,12 @@ export class WorkingHoursController {
     return this.workingHoursService.month(user, +monthNumber, +year);
     // return this.workingHoursService.week(+weekNumber, +year, user);
   }
+  @Get('/day/:date')
+  @UseGuards(AuthGuard('jwt'))
+  day(@UserObj() user: User, @Param('date') date: string) {
+    return this.workingHoursService.day(user, date);
+    // return this.workingHoursService.week(+weekNumber, +year, user);
+  }
 
   @Get('/:id')
   @UseGuards(AuthGuard('jwt'))

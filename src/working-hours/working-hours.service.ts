@@ -100,7 +100,7 @@ export class WorkingHoursService {
     user: User,
     weekNumber: number,
     year: number,
-  ): Promise<WorkingHour[]> {
+  ): Promise<{ hours: WorkingHour[]; owner: User }> {
     const daysInWeek: (string | { [x: string]: string })[] =
       getDaysFromWeekNumber(+weekNumber, +year);
 
@@ -110,7 +110,8 @@ export class WorkingHoursService {
         relations: ['owner'],
         order: { dateOfWork: 'ASC' },
       });
-      const res = [];
+      const res: WorkingHour[] = [];
+      const ownerRes = { owner: this.shortUserInfo(wHours[0].owner) };
 
       wHours.map((e) => {
         const e2 = {
@@ -121,16 +122,14 @@ export class WorkingHoursService {
           ),
         };
         delete e.id;
-        e.owner = this.shortUserInfo(e.owner);
+        delete e.owner;
         res.push(Object.assign(e, e2));
       });
-
-      return res;
+      const hours = { hours: [...res] };
+      return { ...hours, ...ownerRes };
     } catch (err) {
       return err;
     }
-
-    // return getDaysFromWeekNumber(+weekNumber, +year);
   }
   async month(
     user: User,

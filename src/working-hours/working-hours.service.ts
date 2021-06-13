@@ -114,6 +114,41 @@ export class WorkingHoursService {
       return err;
     }
   }
+  async findOne(
+    id: string,
+    user: User,
+  ): Promise<{ hours: WorkingHour; owner: User }> {
+    try {
+      if (!id) {
+        throw new HttpException(
+          `Record ${id} is not exist.`,
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      const res = await WorkingHour.findOne({
+        where: { owner: user.id, id: id },
+        relations: ['owner'],
+      });
+      if (!res) {
+        throw new HttpException(
+          `Record ${id} is not find.`,
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      const ownerRes = { owner: this.shortUserInfo(res.owner) };
+      const toPay = getHoursToPay(
+        res.startTimeOfWork.toLocaleString(),
+        res.endTimeOfWork.toLocaleString(),
+        res.dateOfWork,
+      );
+      delete res.owner;
+
+      const hours = { hours: Object.assign({}, res, { toPay }) };
+      return { ...hours, ...ownerRes };
+    } catch (err) {
+      return err;
+    }
+  }
   async week(
     user: User,
     weekNumber: number,
@@ -208,32 +243,6 @@ export class WorkingHoursService {
 
       const hours = { hours: Object.assign({}, res, { toPay }) };
       return { ...hours, ...ownerRes };
-    } catch (err) {
-      return err;
-    }
-  }
-
-  async findOne(id: string, user: User): Promise<WorkingHoursResponse> {
-    try {
-      if (!id) {
-        throw new HttpException(
-          `Record ${id} is not exist.`,
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-      const res = await WorkingHour.findOne({
-        where: { owner: user.id, id: id },
-        relations: ['owner'],
-      });
-
-      if (!res) {
-        throw new HttpException(
-          `Record ${id} is not find.`,
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-      res.owner = this.shortUserInfo(res.owner);
-      return res;
     } catch (err) {
       return err;
     }

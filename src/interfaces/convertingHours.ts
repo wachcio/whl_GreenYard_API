@@ -1,3 +1,5 @@
+import { RegisterUserResponse } from './user';
+
 export interface ParseHourObj {
   hour: number;
   minute: number;
@@ -34,4 +36,29 @@ export interface Summary {
   overTime50: number;
   overTime100: number;
   allHours: number;
+}
+
+export interface ToPay {
+  dayOfWeek: number;
+  weekNumber: number;
+  dayName: string;
+  normalTime: number;
+  overTime50: number;
+  overTime100: number;
+  allHours: number;
+}
+
+export interface Hours {
+  dateOfWork: string;
+  startTimeOfWork: string;
+  endTimeOfWork: string;
+  workDescription: string;
+  createAt: string;
+  updateAt: string;
+  toPay: GetHoursToPay;
+}
+
+export interface DayHourseResponse {
+  hours: Hours;
+  owner: RegisterUserResponse;
 }

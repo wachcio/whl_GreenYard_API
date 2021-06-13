@@ -14,7 +14,10 @@ import {
   getDaysFromMonthNumber,
   isValidDate,
 } from '../utils/convertingHours';
-import { GetInfoOfWeek } from 'src/interfaces/convertingHours';
+// import {
+//   DayHourseResponse,
+//   GetInfoOfWeek,
+// } from 'src/interfaces/convertingHours';
 import { In } from 'typeorm';
 
 @Injectable()
@@ -168,7 +171,10 @@ export class WorkingHoursService {
       return err;
     }
   }
-  async day(user: User, date: string): Promise<WorkingHour> {
+  async day(
+    user: User,
+    date: string,
+  ): Promise<{ hours: WorkingHour; owner: User }> {
     if (!isValidDate(date))
       throw new HttpException(
         `${date} is not valid date.`,
@@ -179,10 +185,17 @@ export class WorkingHoursService {
         where: { owner: user.id, dateOfWork: date },
         relations: ['owner'],
       });
+      const ownerRes = { owner: this.shortUserInfo(res.owner) };
+      const toPay = getHoursToPay(
+        res.startTimeOfWork.toLocaleString(),
+        res.endTimeOfWork.toLocaleString(),
+        res.dateOfWork,
+      );
       delete res.id;
-      res.owner = this.shortUserInfo(res.owner);
+      delete res.owner;
 
-      return res;
+      const hours = { hours: Object.assign({}, res, { toPay }) };
+      return { ...hours, ...ownerRes };
     } catch (err) {
       return err;
     }
